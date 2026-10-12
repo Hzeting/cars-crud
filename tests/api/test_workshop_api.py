@@ -1,0 +1,50 @@
+"""
+def test_post_carReturns_201_and_json(client):
+    payload = {
+        "make": "Ford",
+        "model": "Fiesta",
+        "year": 2018,
+        "color": "Black",
+    }
+    response = client.post("/api/cars", json=payload)
+    #assert response.status_code == 200  # deliberately wrong（故意写错）
+    assert response.status_code == 201
+    car = response.json()
+    assert car["id"] > 0
+    assert car["make"] == "Ford"
+    assert car["model"] == "Fiesta"
+    assert response.headers["location"] == f"/api/cars/{car['id']}"
+
+"""
+
+
+# Write a new API test
+def test_post_carReturns_201_and_json(client):
+    payload = {
+        "make": "Ford",
+        "model": "Fiesta",
+        "year": 2018,
+        "color": "Black",
+    }
+    response = client.post("/api/cars", json=payload)
+    assert response.status_code == 201
+    car = response.json()
+    assert car["id"] > 0
+    assert car["make"] == "Ford"
+    assert car["model"] == "Fiesta"
+    assert response.headers["location"] == f"/api/cars/{car['id']}"
+
+
+def test_invalid_year_is_not_saved(client):
+    payload = {
+        "make": "Ford",
+        "model": "Fiesta",
+        "year": 1800,
+        "color": "Black",
+    }
+    response = client.post("/api/cars", json=payload)
+    assert response.status_code == 422
+
+    cars = client.get("/api/cars")
+    assert cars.status_code == 200
+    assert cars.json() == []
